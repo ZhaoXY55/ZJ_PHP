@@ -1,5 +1,5 @@
 <template>
   <div>
-    admin
+    detail
   </div>
 </template>
