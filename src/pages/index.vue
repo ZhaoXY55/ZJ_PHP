@@ -7,7 +7,7 @@
         </el-row>
         <el-row>
           <el-col :span="24" class="nav">
-            <input type="text" placeholder="请输入想要查找的商品" />
+            <input type="text" placeholder="请输入想要查找的商品" v-model="search"/>
             <button @click="$router.push({ path: '/Admin' })">商品管理</button>
           </el-col>
         </el-row>
@@ -17,12 +17,12 @@
           <el-col :span="6" class="sign"><span>价格</span></el-col>
           <el-col :span="6" class="sign"><span>状态</span></el-col>
         </el-row>
-        <el-row v-for="(good, index) in goodList" :key="index">
+        <el-row v-for="(product, index) in productList" :key="index">
           <div @click="goDetail">
-            <el-col :span="6" class="good name"><span>{{good.name}}</span></el-col>
-            <el-col :span="6" class="good pic"><span>{{good.pic}}</span></el-col>
-            <el-col :span="6" class="good price"><span>{{good.price}}</span></el-col>
-            <el-col :span="6" class="good status"><span>{{good.status}}</span></el-col>
+            <el-col :span="6" class="product name"><span>{{product.name}}</span></el-col>
+            <el-col :span="6" class="product pic"><span>{{product.pic}}</span></el-col>
+            <el-col :span="6" class="product price"><span>{{product.price}}</span></el-col>
+            <el-col :span="6" class="product status"><span>{{product.status}}</span></el-col>
           </div>
         </el-row>
       </div>
@@ -31,10 +31,11 @@
 </template>
 <script>
 export default {
-  name: "Index",
+  name: 'Index',
   data(){
     return {
-      goodList: [
+      search: '',
+      productList: [
         {
           name: '宝宝精水',
           pic: '1',
@@ -63,7 +64,7 @@ export default {
   },
 };
 </script>
-<style scope lang="scss">
+<style scoped lang="scss">
 .main {
   width: 100%;
   .list {
@@ -111,7 +112,7 @@ export default {
     font-weight: bold;
     padding: 10px;
   }
-  .good {
+  .product {
     height: 200px;
     text-align: center;
     border-bottom: 2px solid #e6a23c;
