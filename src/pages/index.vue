@@ -1,122 +1,105 @@
 <template>
   <div>
     <div class="main">
-      <div class="list">
-        <el-row>
-          <el-col :span="24" class="title"><h1>商品列表</h1></el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24" class="nav">
-            <input type="text" placeholder="请输入想要查找的商品" v-model="search"/>
-            <button @click="$router.push({ path: '/Admin' })">商品管理</button>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6" class="sign"><span>名称</span></el-col>
-          <el-col :span="6" class="sign"><span>图片</span></el-col>
-          <el-col :span="6" class="sign"><span>价格</span></el-col>
-          <el-col :span="6" class="sign"><span>状态</span></el-col>
-        </el-row>
-        <el-row v-for="(product, index) in productList" :key="index">
-          <div @click="goDetail">
-            <el-col :span="6" class="product name"><span>{{product.name}}</span></el-col>
-            <el-col :span="6" class="product pic"><span>{{product.pic}}</span></el-col>
-            <el-col :span="6" class="product price"><span>{{product.price}}</span></el-col>
-            <el-col :span="6" class="product status"><span>{{product.status}}</span></el-col>
-          </div>
-        </el-row>
+      <div class="header">
+        <span>商品列表</span>
+        <el-button type="primary" @click="$router.push({ path: '/Admin' })"
+          >商品管理</el-button
+        >
       </div>
+      <el-table
+        :data="productList.filter(product => !search || product.name.includes(search))"
+        class="table"
+        border
+      >
+        <el-table-column prop="name" label="名称" align="center" width="200">
+        </el-table-column>
+        <el-table-column prop="pic" label="图片" align="center">
+          <template slot-scope="scope">
+            <img :src="imgUrl(scope.row)">
+          </template>
+        </el-table-column>
+        <el-table-column width="350" align="center">
+          <template slot="header">
+            <input type="text" v-model="search" class="search" placeholder="请输入关键字搜索">
+          </template>
+          <template slot-scope="scope">
+            <span @click="goDetail(scope.row)" class="detail">详情</span>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
   </div>
 </template>
 <script>
 export default {
-  name: 'Index',
-  data(){
+  name: "Index",
+  data() {
     return {
-      search: '',
-      productList: [
-        {
-          name: '宝宝精水',
-          pic: '1',
-          price: '￥20',
-          status: '已上架'
-        },
-        {
-          name: '沐浴露',
-          pic: '8',
-          price: '￥15',
-          status: '已上架'
-        },
-        {
-          name: '伟哥',
-          pic: '9 ',
-          price: '￥200',
-          status: '未上架'
-        },
-      ]
-    }
+      search: "",
+      productList: "",
+    };
+  },
+  mounted() {
+    // 获取商品列表
+    this.$ajax.get("http://localhost/php/getProductList.php").then((res) => {
+      // 筛选已上架的商品
+      this.productList = res.data.filter((obj) => {
+        return obj.status == "已上架";
+      });
+    });
   },
   methods: {
-    goDetail(){
-      this.$router.push({path:'/Detail'})
+    goDetail(obj) {
+      this.$router.push({
+        path: "/Detail",
+        query: {
+          id: obj.id,
+        },
+      });
+    },
+    imgUrl(obj) {
+      return obj.pic
+      // return require(obj.pic)
+      // return require('../assets/img/0.jpg')
     }
   },
 };
 </script>
 <style scoped lang="scss">
 .main {
-  width: 100%;
-  .list {
-    width: 80%;
-    margin: 0 auto;
-    border-left: 2px solid #e6a23c;
-    border-right: 2px solid #e6a23c;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  }
-  .title {
-    border-bottom: 2px solid #e6a23c;
-    text-align: center;
-  }
-  .nav {
+  .header {
+    width: 1000px;
+    margin: 10px auto;
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    border-bottom: 2px solid #e6a23c;
-    input {
-      width: 400px;
-      border-radius: 10px;
+    span {
+      font-size: 36px;
+      font-weight: bold;
+    }
+  }
+  .table {
+    width: 80%;
+    margin: 0 auto;
+    border: 2px solid #909399;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    .search {
+      width: 280px;
+      height: 20px;
       padding: 10px;
-      border: 1px solid #e6a23c;
+      border-radius: 10px;
+      border: 2px solid #909399;
     }
     ::-webkit-input-placeholder {
-      color: #e6a23c;
+      color: #E4E7ED;
     }
-    button {
-      width: 100px;
-      height: 40px;
+    img {
+      height: 150px;
+    }
+    .detail {
+      color: #409EFF;
       cursor: pointer;
-      background: #fff;
-      color: #e6a23c;
-      border: 1px solid #e6a23c;
-      border-radius: 10px;
     }
-    button:hover {
-      background: #e6a23c;
-      color: #fff;
-    }
-  }
-  .sign {
-    text-align: center;
-    border-bottom: 2px solid #e6a23c;
-    font-weight: bold;
-    padding: 10px;
-  }
-  .product {
-    height: 200px;
-    text-align: center;
-    border-bottom: 2px solid #e6a23c;
-    cursor: pointer;
   }
 }
 </style>
