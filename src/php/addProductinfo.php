@@ -2,6 +2,7 @@
 	header("Access-Control-Allow-Origin: *");//这个必写，否则报错
 	$mysqli=new mysqli('localhost','root','root','product');//根据自己的数据库填写
  
+  // 接收信息
   $name = $_POST['name'];
   $pic = $_POST['pic'];
   $price = $_POST['price'];
@@ -10,6 +11,7 @@
 	$sql="select * from product";
 	$res=$mysqli->query($sql);
 
+  // sql插入语句
   $sql = "INSERT INTO product(name,pic,price,status) VALUES ('$name','$pic','$price','$status')";
   if ($mysqli->query($sql)) {
     echo "success";

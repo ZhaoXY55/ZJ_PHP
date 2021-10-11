@@ -15,6 +15,7 @@
   if($type == 'updateAll') {
     while ($row=$res->fetch_assoc()) {
       if($row['id'] == $id) {
+        // sql修改语句
         $sql = "UPDATE product SET name = '$name',pic = '$pic',price = '$price' WHERE id = '$id'";
         if ($mysqli->query($sql)) {
           echo "success";

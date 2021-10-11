@@ -10,6 +10,7 @@
 
   while ($row=$res->fetch_assoc()) {
     if($row['id'] == $id) {
+      // sql删除语句
       $sql = "DELETE FROM product WHERE id = '$id'";
       if ($mysqli->query($sql)) {
         echo "success";

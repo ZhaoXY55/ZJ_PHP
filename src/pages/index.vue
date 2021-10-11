@@ -3,28 +3,35 @@
     <div class="main">
       <div class="header">
         <span>商品列表</span>
-        <el-button type="primary" @click="$router.push({ path: '/Admin' })"
-          >商品管理</el-button
-        >
+        <el-button type="primary"
+                   @click="$router.push({ path: '/Admin' })">商品管理</el-button>
       </div>
-      <el-table
-        :data="productList.filter(product => !search || product.name.includes(search))"
-        class="table"
-        border
-      >
-        <el-table-column prop="name" label="名称" align="center" width="200">
+      <el-table :data="productList.filter(product => !search || product.name.includes(search))"
+                class="table"
+                border>
+        <el-table-column prop="name"
+                         label="名称"
+                         align="center"
+                         width="200">
         </el-table-column>
-        <el-table-column prop="pic" label="图片" align="center">
+        <el-table-column prop="pic"
+                         label="图片"
+                         align="center">
           <template slot-scope="scope">
             <img :src="imgUrl(scope.row)">
           </template>
         </el-table-column>
-        <el-table-column width="350" align="center">
+        <el-table-column width="350"
+                         align="center">
           <template slot="header">
-            <input type="text" v-model="search" class="search" placeholder="请输入关键字搜索">
+            <input type="text"
+                   v-model="search"
+                   class="search"
+                   placeholder="请输入关键字搜索">
           </template>
           <template slot-scope="scope">
-            <span @click="goDetail(scope.row)" class="detail">详情</span>
+            <span @click="goDetail(scope.row)"
+                  class="detail">详情</span>
           </template>
         </el-table-column>
       </el-table>
@@ -34,23 +41,26 @@
 <script>
 export default {
   name: "Index",
-  data() {
+  data () {
     return {
       search: "",
       productList: "",
     };
   },
-  mounted() {
+  mounted () {
     // 获取商品列表
     this.$ajax.get("http://localhost/php/getProductList.php").then((res) => {
       // 筛选已上架的商品
       this.productList = res.data.filter((obj) => {
         return obj.status == "已上架";
       });
-    });
+    })
+      .catch(err => {
+        console.log(err)
+      })
   },
   methods: {
-    goDetail(obj) {
+    goDetail (obj) {
       this.$router.push({
         path: "/Detail",
         query: {
@@ -58,10 +68,8 @@ export default {
         },
       });
     },
-    imgUrl(obj) {
+    imgUrl (obj) {
       return obj.pic
-      // return require(obj.pic)
-      // return require('../assets/img/0.jpg')
     }
   },
 };
@@ -91,13 +99,13 @@ export default {
       border: 2px solid #909399;
     }
     ::-webkit-input-placeholder {
-      color: #E4E7ED;
+      color: #e4e7ed;
     }
     img {
       height: 150px;
     }
     .detail {
-      color: #409EFF;
+      color: #409eff;
       cursor: pointer;
     }
   }

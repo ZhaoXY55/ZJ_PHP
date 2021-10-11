@@ -3,49 +3,50 @@
     <div class="main">
       <div class="header">
         <span>商品管理</span>
-        <el-button type="primary" @click="$router.push({ path: '/Add' })"
-          >添加商品</el-button
-        >
+        <el-button type="primary"
+                   @click="$router.push({ path: '/Add' })">添加商品</el-button>
       </div>
-      <el-table
-        :data="tableData"
-        class="table"
-        border
-        style="width: 1000px; margin: 0 auto"
-      >
-        <el-table-column prop="id" label="id" width="100" align="center" sortable>
+      <el-table :data="tableData"
+                class="table"
+                border
+                style="width: 1000px; margin: 0 auto">
+        <el-table-column prop="id"
+                         label="id"
+                         width="100"
+                         align="center"
+                         sortable>
         </el-table-column>
-        <el-table-column label="商品操作" width="100" align="center">
+        <el-table-column label="商品操作"
+                         width="100"
+                         align="center">
           <template slot-scope="scope">
             <el-dropdown class="right-operate-wrap">
               <el-button size="small">操作</el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="goUpdate(scope.row)"
-                  >编辑</el-dropdown-item
-                >
-                <el-dropdown-item
-                  @click.native="remove(scope.row, scope.$index, tableData)"
-                  >删除</el-dropdown-item
-                >
+                <el-dropdown-item @click.native="goUpdate(scope.row)">编辑</el-dropdown-item>
+                <el-dropdown-item @click.native="remove(scope.row, scope.$index, tableData)">删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="名称" align="center">
+        <el-table-column prop="name"
+                         label="名称"
+                         align="center">
         </el-table-column>
-        <el-table-column prop="status" label="状态" align="center" width="200">
+        <el-table-column prop="status"
+                         label="状态"
+                         align="center"
+                         width="200">
         </el-table-column>
-        <el-table-column label="状态操作" width="100" align="center">
+        <el-table-column label="状态操作"
+                         width="100"
+                         align="center">
           <template slot-scope="scope">
             <el-dropdown class="right-operate-wrap">
               <el-button size="small">操作</el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="putOn(scope.row)"
-                  >上架</el-dropdown-item
-                >
-                <el-dropdown-item @click.native.prevent="pullOff(scope.row)"
-                  >下架</el-dropdown-item
-                >
+                <el-dropdown-item @click.native="putOn(scope.row)">上架</el-dropdown-item>
+                <el-dropdown-item @click.native.prevent="pullOff(scope.row)">下架</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
@@ -58,19 +59,22 @@
 import qs from "qs";
 export default {
   name: "Admin",
-  data() {
+  data () {
     return {
       tableData: [],
     };
   },
-  mounted() {
+  mounted () {
     // 获取商品列表
     this.$ajax.get("http://localhost/php/getProductList.php").then((res) => {
       this.tableData = res.data;
-    });
+    })
+      .catch(err => {
+        console.log(err)
+      })
   },
   methods: {
-    goUpdate(obj) {
+    goUpdate (obj) {
       // 编辑商品信息
       if (obj.status != "已上架") {
         localStorage.id = obj.id
@@ -87,10 +91,11 @@ export default {
         });
       }
     },
-    deleteRow(index, rows) {
+    deleteRow (index, rows) {
+      // 删除列表行
       rows.splice(index, 1);
     },
-    remove(obj, index, rows) {
+    remove (obj, index, rows) {
       // 移除商品
       if (obj.status != "已上架") {
         this.$confirm("此操作将永久删除该商品, 是否继续?", "提示", {
@@ -113,10 +118,18 @@ export default {
                     message: "商品已删除",
                   });
                   this.deleteRow(index, rows);
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: "删除失败",
+                  });
                 }
-              });
+              })
+              .catch(err => {
+                console.log(err)
+              })
           })
-          .catch(() => {});
+          .catch(() => { });
       } else {
         this.$message({
           type: "error",
@@ -124,7 +137,7 @@ export default {
         });
       }
     },
-    putOn(obj) {
+    putOn (obj) {
       // 商品上架
       if (obj.status != "已上架") {
         this.$confirm("是否上架商品?", "提示", {
@@ -148,10 +161,19 @@ export default {
                     type: "success",
                     message: "商品已上架",
                   });
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: "上架失败",
+                  });
+                  console.log(res);
                 }
-              });
+              })
+              .catch(err => {
+                console.log(err)
+              })
           })
-          .catch(() => {});
+          .catch(() => { });
       } else {
         this.$message({
           type: "warning",
@@ -159,7 +181,7 @@ export default {
         });
       }
     },
-    pullOff(obj) {
+    pullOff (obj) {
       // 商品下架
       if (obj.status != "已下架") {
         this.$confirm("是否下架商品?", "提示", {
@@ -183,10 +205,19 @@ export default {
                     type: "success",
                     message: "商品已下架",
                   });
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: "下架失败",
+                  });
+                  console.log(res);
                 }
-              });
+              })
+              .catch(err => {
+                console.log(err)
+              })
           })
-          .catch(() => {});
+          .catch(() => { });
       } else {
         this.$message({
           type: "warning",

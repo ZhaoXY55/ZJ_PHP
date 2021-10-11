@@ -2,29 +2,30 @@
   <div class="add">
     <div class="main">
       <div class="title">
-        <el-page-header @back="goBack" content="添加商品"> </el-page-header>
+        <el-page-header @back="goBack"
+                        content="添加商品"> </el-page-header>
       </div>
       <div class="form">
-        <el-form
-          label-position="top"
-          label-width="120px"
-          :model="product"
-          :rules="rules"
-          ref="productForm"
-        >
-          <el-form-item label="名称：" prop="name">
+        <el-form label-position="top"
+                 label-width="120px"
+                 :model="product"
+                 :rules="rules"
+                 ref="productForm">
+          <el-form-item label="名称："
+                        prop="name">
             <el-input v-model="product.name"></el-input>
           </el-form-item>
-          <el-form-item label="价格：" prop="price">
+          <el-form-item label="价格："
+                        prop="price">
             <el-input v-model.number="product.price"></el-input>
           </el-form-item>
-          <el-form-item label="图片路径：" prop="pic">
+          <el-form-item label="图片路径："
+                        prop="pic">
             <el-input v-model="product.pic"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit('productForm')"
-              >立即添加</el-button
-            >
+            <el-button type="primary"
+                       @click="onSubmit('productForm')">立即添加</el-button>
             <el-button @click="$router.back()">取消</el-button>
           </el-form-item>
         </el-form>
@@ -35,7 +36,7 @@
 <script>
 import qs from "qs";
 export default {
-  data() {
+  data () {
     return {
       product: {
         name: "",
@@ -70,10 +71,10 @@ export default {
     };
   },
   methods: {
-    goBack() {
+    goBack () {
       this.$router.back();
     },
-    onSubmit(formName) {
+    onSubmit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.product);
@@ -101,9 +102,15 @@ export default {
                   message: "商品添加失败！",
                 });
               }
-            });
+            })
+            .catch(err => {
+              console.log(err)
+            })
         } else {
-          alert("请确认表单是否填写正确");
+          this.$message({
+            type: 'error',
+            message: '请确认表单是否填写正确'
+          })
           return false;
         }
       });
