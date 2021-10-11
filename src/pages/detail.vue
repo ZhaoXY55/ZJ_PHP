@@ -2,61 +2,65 @@
   <div class="change">
     <div class="main">
       <div class="title">
-        <el-page-header @back="goBack"
-                        content="商品详情"> </el-page-header>
+        <el-page-header @back="goBack" content="商品详情"> </el-page-header>
       </div>
       <div class="detail">
-        <img :src="product.pic"
-             alt="" />
+        <img :src="product.pic" alt="" />
         <div class="content">
-          <span>名称：<span class="name content-data">{{
+          <span
+            >名称：<span class="name content-data">{{
               product.name
-            }}</span></span>
-          <span>价格：<span class="price content-data">￥{{ product.price }}</span></span>
+            }}</span></span
+          >
+          <span
+            >价格：<span class="price content-data"
+              >￥{{ product.price }}</span
+            ></span
+          >
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import qs from "qs";
+import qs from 'qs'
 export default {
-  data () {
+  data() {
     return {
       product: {
-        name: "",
-        pic: "",
-        price: "",
+        name: '',
+        pic: '',
+        price: '',
       },
-    };
+    }
   },
-  mounted () {
+  mounted() {
     this.$ajax
       .post(
-        "http://localhost/php/getProductInfo.php",
+        'http://localhost/php/getProductInfo.php',
         qs.stringify({
           id: this.$route.query.id,
         })
       )
       .then((res) => {
-        let productInfo = res.data.split(",");
-        this.product.name = productInfo[0];
-        this.product.pic = productInfo[1];
-        this.product.price = productInfo[2];
+        let productInfo = res.data.split(',')
+        this.product.name = productInfo[0]
+        this.product.pic = productInfo[1]
+        this.product.price = productInfo[2]
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err)
       })
   },
   methods: {
-    goBack () {
-      this.$router.back();
+    goBack() {
+      this.$router.back()
     },
-    imgUrl (obj) {
+    imgUrl(obj) {
       return require(obj.pic)
     },
   },
-};
+}
 </script>
 <style scoped lang="scss">
 .main {

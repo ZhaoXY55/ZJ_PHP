@@ -2,30 +2,29 @@
   <div class="change">
     <div class="main">
       <div class="title">
-        <el-page-header @back="goBack"
-                        content="商品编辑"> </el-page-header>
+        <el-page-header @back="goBack" content="商品编辑"> </el-page-header>
       </div>
       <div class="form">
-        <el-form label-position="top"
-                 label-width="120px"
-                 :model="product"
-                 :rules="rules"
-                 ref="productForm">
-          <el-form-item label="名称："
-                        prop="name">
+        <el-form
+          label-position="top"
+          label-width="120px"
+          :model="product"
+          :rules="rules"
+          ref="productForm"
+        >
+          <el-form-item label="名称：" prop="name">
             <el-input v-model="product.name"></el-input>
           </el-form-item>
-          <el-form-item label="价格："
-                        prop="price">
+          <el-form-item label="价格：" prop="price">
             <el-input v-model.number="product.price"></el-input>
           </el-form-item>
-          <el-form-item label="图片路径："
-                        prop="pic">
+          <el-form-item label="图片路径：" prop="pic">
             <el-input v-model.number="product.pic"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary"
-                       @click="onSubmit('productForm')">修改</el-button>
+            <el-button type="primary" @click="onSubmit('productForm')"
+              >修改</el-button
+            >
             <el-button @click="$router.back()">取消</el-button>
           </el-form-item>
         </el-form>
@@ -34,72 +33,72 @@
   </div>
 </template>
 <script>
-import qs from "qs";
+import qs from 'qs'
 export default {
-  data () {
+  data() {
     return {
       product: {
-        name: "",
-        pic: "",
-        price: "",
+        name: '',
+        pic: '',
+        price: '',
       },
       rules: {
         name: {
           required: true,
-          message: "请输入商品名称",
-          trigger: "blur",
+          message: '请输入商品名称',
+          trigger: 'blur',
         },
         price: [
           {
             required: true,
-            message: "请输入商品价格",
-            trigger: "blur",
+            message: '请输入商品价格',
+            trigger: 'blur',
           },
           {
             pattern: /^\d+$/,
-            message: "请输入正确的商品价格",
-            trigger: "blur",
+            message: '请输入正确的商品价格',
+            trigger: 'blur',
           },
         ],
         pic: {
           required: true,
-          message: "请输入商品图片路径",
-          trigger: "blur",
+          message: '请输入商品图片路径',
+          trigger: 'blur',
         },
       },
-    };
+    }
   },
-  mounted () {
+  mounted() {
     // 获取商品信息
     this.$ajax
       .post(
-        "http://localhost/php/getProductInfo.php",
+        'http://localhost/php/getProductInfo.php',
         qs.stringify({
           id: this.$route.query.id,
         })
       )
       .then((res) => {
-        let productInfo = res.data.split(",");
-        this.product.name = productInfo[0];
-        this.product.pic = productInfo[1];
-        this.product.price = productInfo[2];
+        let productInfo = res.data.split(',')
+        this.product.name = productInfo[0]
+        this.product.pic = productInfo[1]
+        this.product.price = productInfo[2]
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err)
       })
   },
   methods: {
-    goBack () {
-      this.$router.back();
+    goBack() {
+      this.$router.back()
     },
-    onSubmit (formName) {
+    onSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$ajax
             .post(
-              "http://localhost/php/updateProductInfo.php",
+              'http://localhost/php/updateProductInfo.php',
               qs.stringify({
-                type: "updateAll",
+                type: 'updateAll',
                 id: localStorage.id,
                 name: this.product.name,
                 pic: this.product.pic,
@@ -107,33 +106,33 @@ export default {
               })
             )
             .then((res) => {
-              if (res.data == "success") {
+              if (res.data == 'success') {
                 this.$message({
-                  type: "success",
-                  message: "修改成功！",
-                });
-                this.$router.back();
+                  type: 'success',
+                  message: '修改成功！',
+                })
+                this.$router.back()
               } else {
                 this.$message({
-                  type: "error",
-                  message: "修改失败！",
-                });
+                  type: 'error',
+                  message: '修改失败！',
+                })
               }
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err)
             })
         } else {
           this.$message({
             type: 'error',
-            message: '请确认表单是否填写正确'
+            message: '请确认表单是否填写正确',
           })
-          return false;
+          return false
         }
-      });
+      })
     },
   },
-};
+}
 </script>
 <style scoped lang="scss">
 .main {
