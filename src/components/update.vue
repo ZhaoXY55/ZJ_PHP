@@ -1,5 +1,5 @@
 <template>
-  <div class="change">
+  <div class="change" v-loading="loading" element-loading-text="拼命加载中">
     <div class="main">
       <div class="title">
         <el-page-header @back="goBack" content="商品编辑"> </el-page-header>
@@ -25,7 +25,7 @@
             <el-button type="primary" @click="onSubmit('productForm')"
               >修改</el-button
             >
-            <el-button @click="$router.back()">取消</el-button>
+            <el-button type="error" @click="$router.back()">取消</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -37,6 +37,7 @@ import qs from 'qs'
 export default {
   data() {
     return {
+      loading: false,
       product: {
         name: '',
         pic: '',
@@ -69,6 +70,7 @@ export default {
     }
   },
   mounted() {
+    this.loading = true
     // 获取商品信息
     this.$ajax
       .post(
@@ -78,6 +80,7 @@ export default {
         })
       )
       .then((res) => {
+        this.loading = false
         let productInfo = res.data.split(',')
         this.product.name = productInfo[0]
         this.product.pic = productInfo[1]
@@ -85,6 +88,11 @@ export default {
       })
       .catch((err) => {
         console.log(err)
+        this.loading = false
+        this.$message({
+          type: 'error',
+          message: '数据获取失败'
+        })
       })
   },
   methods: {
@@ -94,6 +102,7 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.loading = true
           this.$ajax
             .post(
               'http://localhost/php/updateProductInfo.php',
@@ -107,12 +116,14 @@ export default {
             )
             .then((res) => {
               if (res.data == 'success') {
+                this.loading = false
                 this.$message({
                   type: 'success',
                   message: '修改成功！',
                 })
                 this.$router.back()
               } else {
+                this.loading = false
                 this.$message({
                   type: 'error',
                   message: '修改失败！',
@@ -121,6 +132,11 @@ export default {
             })
             .catch((err) => {
               console.log(err)
+              this.loading = false
+              this.$message({
+                  type: 'error',
+                  message: '修改失败！',
+                })
             })
         } else {
           this.$message({
@@ -132,6 +148,13 @@ export default {
       })
     },
   },
+  beforeRouteEnter (to, from, next) {
+    if (to.query.id != undefined) {
+      next()
+    }else {
+      next({path: '/Admin'})
+    }
+  }
 }
 </script>
 <style scoped lang="scss">

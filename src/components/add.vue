@@ -1,5 +1,5 @@
 <template>
-  <div class="add">
+  <div class="add"  v-loading="loading" element-loading-text="拼命加载中">
     <div class="main">
       <div class="title">
         <el-page-header @back="goBack" content="添加商品"> </el-page-header>
@@ -25,7 +25,7 @@
             <el-button type="primary" @click="onSubmit('productForm')"
               >立即添加</el-button
             >
-            <el-button @click="$router.back()">取消</el-button>
+            <el-button type="error" @click="$router.back()">取消</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -37,6 +37,7 @@ import qs from 'qs'
 export default {
   data() {
     return {
+      loading: false,
       product: {
         name: '',
         pic: '',
@@ -76,7 +77,7 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.product)
+          this.loading = true
           this.$ajax
             .post(
               'http://localhost/php/addProductInfo.php',
@@ -88,8 +89,8 @@ export default {
               })
             )
             .then((res) => {
-              console.log(res)
               if (res.data == 'success') {
+                this.loading = false
                 this.$message({
                   type: 'success',
                   message: '商品添加成功！',
@@ -104,8 +105,14 @@ export default {
             })
             .catch((err) => {
               console.log(err)
+              this.loading = false
+              this.$message({
+                type: 'error',
+                message: '商品添加失败！',
+              })
             })
         } else {
+          this.loading = false
           this.$message({
             type: 'error',
             message: '请确认表单是否填写正确',

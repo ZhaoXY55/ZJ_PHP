@@ -2,16 +2,21 @@
   <div>
     <div class="main">
       <div class="header">
-        <span>商品管理</span>
+        <span class="title">商品管理</span>
         <el-button type="primary" @click="$router.push({ path: '/Add' })"
           >添加商品</el-button
         >
       </div>
       <el-table
-        :data="tableData"
+        v-loading="loading"
+        element-loading-text="拼命加载中"
+        :data="
+          productList.filter(
+            (product) => !search || product.name.includes(search)
+          )
+        "
         class="table"
         border
-        style="width: 1000px; margin: 0 auto"
       >
         <el-table-column
           prop="id"
@@ -30,7 +35,7 @@
                   >编辑</el-dropdown-item
                 >
                 <el-dropdown-item
-                  @click.native="remove(scope.row, scope.$index, tableData)"
+                  @click.native="remove(scope.row, scope.$index, productList)"
                   >删除</el-dropdown-item
                 >
               </el-dropdown-menu>
@@ -41,7 +46,15 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" align="center" width="200">
         </el-table-column>
-        <el-table-column label="状态操作" width="100" align="center">
+        <el-table-column width="350" align="center">
+          <template slot="header">
+            <input
+              type="text"
+              v-model="search"
+              class="search"
+              placeholder="请输入关键字搜索"
+            />
+          </template>
           <template slot-scope="scope">
             <el-dropdown class="right-operate-wrap">
               <el-button size="small">操作</el-button>
@@ -66,25 +79,33 @@ export default {
   name: 'Admin',
   data() {
     return {
-      tableData: [],
+      loading: false,
+      search: '',
+      productList: [],
     }
   },
   mounted() {
+    this.loading = true
     // 获取商品列表
     this.$ajax
       .get('http://localhost/php/getProductList.php')
       .then((res) => {
-        this.tableData = res.data
+        this.loading = false
+        this.productList = res.data
       })
       .catch((err) => {
         console.log(err)
+        this.loading = false
+        this.$message({
+          type: 'error',
+          message: '数据获取失败',
+        })
       })
   },
   methods: {
     goUpdate(obj) {
       // 编辑商品信息
       if (obj.status != '已上架') {
-        localStorage.id = obj.id
         this.$router.push({
           path: '/Update',
           query: {
@@ -111,6 +132,7 @@ export default {
           type: 'warning',
         })
           .then(() => {
+            this.loading = true
             this.$ajax
               .post(
                 'http://localhost/php/deleteProductInfo.php',
@@ -120,12 +142,14 @@ export default {
               )
               .then((res) => {
                 if (res.data == 'success') {
+                  this.loading = false
                   this.$message({
                     type: 'success',
                     message: '商品已删除',
                   })
                   this.deleteRow(index, rows)
                 } else {
+                  this.loading = false
                   this.$message({
                     type: 'error',
                     message: '删除失败',
@@ -133,7 +157,12 @@ export default {
                 }
               })
               .catch((err) => {
+                this.loading = false
                 console.log(err)
+                this.$message({
+                  type: 'error',
+                  message: '删除失败',
+                })
               })
           })
           .catch(() => {})
@@ -152,32 +181,39 @@ export default {
           cancelButtonText: '取消',
         })
           .then(() => {
-            obj.status = '已上架'
+            this.loading = true
             this.$ajax
               .post(
                 'http://localhost/php/updateProductInfo.php',
                 qs.stringify({
                   type: 'updateStatus',
                   id: obj.id,
-                  status: obj.status,
+                  status: '已上架',
                 })
               )
               .then((res) => {
                 if (res.data == 'success') {
+                  this.loading = false
+                  obj.status = '已上架'
                   this.$message({
                     type: 'success',
                     message: '商品已上架',
                   })
                 } else {
+                  this.loading = false
                   this.$message({
                     type: 'error',
                     message: '上架失败',
                   })
-                  console.log(res)
                 }
               })
               .catch((err) => {
                 console.log(err)
+                this.loading = false
+                this.$message({
+                  type: 'error',
+                  message: '上架失败',
+                })
               })
           })
           .catch(() => {})
@@ -196,32 +232,39 @@ export default {
           cancelButtonText: '取消',
         })
           .then(() => {
-            obj.status = '已下架'
+            this.loading = true
             this.$ajax
               .post(
                 'http://localhost/php/updateProductInfo.php',
                 qs.stringify({
                   type: 'updateStatus',
                   id: obj.id,
-                  status: obj.status,
+                  status: '已下架',
                 })
               )
               .then((res) => {
                 if (res.data == 'success') {
+                  this.loading = false
+                  obj.status = '已下架'
                   this.$message({
                     type: 'success',
                     message: '商品已下架',
                   })
                 } else {
+                  this.loading = false
                   this.$message({
                     type: 'error',
                     message: '下架失败',
                   })
-                  console.log(res)
                 }
               })
               .catch((err) => {
                 console.log(err)
+                this.loading = false
+                this.$message({
+                  type: 'error',
+                  message: '下架失败',
+                })
               })
           })
           .catch(() => {})
@@ -238,11 +281,11 @@ export default {
 <style scoped lang="scss">
 .main {
   .header {
-    width: 1000px;
+    width: 80%;
     margin: 10px auto;
     display: flex;
     justify-content: space-between;
-    span {
+    .title {
       font-size: 36px;
       font-weight: bold;
     }
@@ -252,6 +295,16 @@ export default {
     margin: 0 auto;
     border: 2px solid #909399;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    .search {
+      width: 280px;
+      height: 20px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #909399;
+    }
+    ::-webkit-input-placeholder {
+      color: #e4e7ed;
+    }
   }
 }
 </style>

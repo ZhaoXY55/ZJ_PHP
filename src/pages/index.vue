@@ -14,6 +14,8 @@
           )
         "
         class="table"
+        v-loading="loading"
+        element-loading-text="拼命加载中"
         border
       >
         <el-table-column prop="name" label="名称" align="center" width="200">
@@ -45,15 +47,18 @@ export default {
   name: 'Index',
   data() {
     return {
+      loading: false,
       search: '',
-      productList: '',
+      productList: [],
     }
   },
   mounted() {
+    this.loading = true
     // 获取商品列表
     this.$ajax
       .get('http://localhost/php/getProductList.php')
       .then((res) => {
+        this.loading = false
         // 筛选已上架的商品
         this.productList = res.data.filter((obj) => {
           return obj.status == '已上架'
@@ -61,6 +66,11 @@ export default {
       })
       .catch((err) => {
         console.log(err)
+        this.loading = false
+        this.$message({
+          type: 'error',
+          message: '数据获取失败'
+        })
       })
   },
   methods: {
@@ -81,7 +91,7 @@ export default {
 <style scoped lang="scss">
 .main {
   .header {
-    width: 1000px;
+    width: 80%;
     margin: 10px auto;
     display: flex;
     justify-content: space-between;

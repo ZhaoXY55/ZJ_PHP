@@ -1,5 +1,5 @@
 <template>
-  <div class="change">
+  <div v-loading="loading" element-loading-text="拼命加载中">
     <div class="main">
       <div class="title">
         <el-page-header @back="goBack" content="商品详情"> </el-page-header>
@@ -27,6 +27,7 @@ import qs from 'qs'
 export default {
   data() {
     return {
+      loading: false,
       product: {
         name: '',
         pic: '',
@@ -35,6 +36,7 @@ export default {
     }
   },
   mounted() {
+    this.loading = true
     this.$ajax
       .post(
         'http://localhost/php/getProductInfo.php',
@@ -43,6 +45,7 @@ export default {
         })
       )
       .then((res) => {
+        this.loading = false
         let productInfo = res.data.split(',')
         this.product.name = productInfo[0]
         this.product.pic = productInfo[1]
@@ -50,6 +53,11 @@ export default {
       })
       .catch((err) => {
         console.log(err)
+        this.loading = false
+        this.$message({
+          type: 'error',
+          message: '数据获取失败'
+        })
       })
   },
   methods: {
@@ -60,6 +68,13 @@ export default {
       return require(obj.pic)
     },
   },
+  beforeRouteEnter (to, from, next) {
+    if (to.query.id != undefined) {
+      next()
+    }else {
+      next({path: '/Index'})
+    }
+  }
 }
 </script>
 <style scoped lang="scss">
